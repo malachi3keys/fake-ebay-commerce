@@ -1,0 +1,45 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Watch List{% endblock %}
+
+{% block body %}
+    <h2 class="h1 mb-3">Watch List</h2>
+
+    <div class="mb-5 mx-4">
+        {% for fave in faves.listing.all %}
+            
+                {% if fave.img %}
+                    <img class="mt-2" src="{{ fave.img }}" alt="{{ fave.post_title }}">
+                {% endif %}
+                <div>
+                    <h3><a href="{% url 'list_item' fave.id %}" class="text-decoration-none text-black">{{ fave.post_title }}</a></h3>
+                    <div>
+                        <p>{{ fave.description }}</p>    
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <p>Starting Bid: ${{ fave.bid_start }}</p>
+                        </div>
+                        <div class="col-2">
+                            <p>Seller: {{ fave.user }}</p>    
+                        </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-2">
+                            <p>Tags:</p>
+                        </div>
+                        <div class="col">
+                            {% for cat in fave.list_tag.all %}
+                                <button id="tags" class="btn btn-small mb-4">{{ cat }}</button>
+                            {% endfor %} 
+                        </div>
+                    </div>  
+                </div>
+               
+        {% empty %}
+            No watched listings
+        {% endfor %}    
+    </div>
+    
+
+{% endblock %}
