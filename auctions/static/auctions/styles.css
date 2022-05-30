@@ -1,0 +1,14 @@
+.formw {
+    width: 50%;
+    min-width: 450px;
+    max-width: 600px;
+}
+
+#tags {
+    background-color: rgb(230, 228, 228);
+    border-radius: 20px;
+}
+
+#tags:hover {
+    border: 1px solid darkgray ;
+}

@@ -1,0 +1,34 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}{{ item.title }}{% endblock %}
+
+{% block body %}
+    <h2 class="h1 mb-3">{{ item.post_title }}</h2>
+    
+    {% if item.img %}
+        <img class="mt-2" src="{{ item.img }}" alt="{{ item.post_title }}">
+    {% endif %}
+    <div>
+        <div>
+            <p>{{ item.description }}</p>    
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <p>Starting Bid: ${{ item.bid_start }}</p>
+            </div>
+            <div class="col-2">
+                <p>Seller: {{ item.user }}</p>    
+            </div>    
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <p>Tags:</p>
+            </div>
+            <div class="col">
+                {% for cat in item.list_tag.all %}
+                    <button id="tags" class="btn btn-small mb-4">{{ cat }}</button>
+                {% endfor %} 
+            </div>
+        </div>  
+    </div>
+{% endblock %}
