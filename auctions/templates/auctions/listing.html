@@ -12,23 +12,50 @@
         <div>
             <p>{{ item.description }}</p>    
         </div>
-        <div class="row">
-            <div class="col-4">
-                <p>Starting Bid: ${{ item.bid_start }}</p>
+        <div class="d-flex flex-row">
+            <div class="pe-2 me-5">
+                <p>Current Bid: ${{ top }}</p>
             </div>
-            <div class="col-2">
+            <div class="pe-2">
                 <p>Seller: {{ item.user }}</p>    
             </div>    
         </div>
-        <div class="row">
-            <div class="col-2">
+        <div class="d-flex flex-row">
+            <div class="pe-2 my-2">
                 <p>Tags:</p>
             </div>
-            <div class="col">
-                {% for cat in item.list_tag.all %}
-                    <button id="tags" class="btn btn-small mb-4">{{ cat }}</button>
+            <div class="align-items-start">
+                {% for tag in item.list_tag.all %}
+                    <a href="{% url 'tags' tag %}" id="tags" class="btn btn-small mb-4">{{ tag }}</a>
                 {% endfor %} 
             </div>
         </div>  
+    </div>
+    
+    {% if editor is True %}
+        <div class="my-5">           
+            <button class="btn btn-small mb-4"><a href="{% url 'edit' id %}">Edit</a></button>
+        </div>
+    {% endif %}
+    
+    <div class="my-5">
+        <h3 class="mb-3">Bids</h3>
+        {% for bid in bids.all %}
+            <div class="my-2 mx-4"> 
+                <p class="comments">${{ bid.dollar }}</p>   
+            </div>
+        {% empty %}
+            No Bids
+        {% endfor %}
+    </div>
+
+    <div class="my-5">
+        <h3 class="mb-3">Comments</h3>
+        {% for comment in comments.all %}
+            <div class="my-2 mx-4"> 
+                <p class="fw-bold comments">{{ comment.user }}</p>
+                <p class="comments ms-2">{{ comment.body }}</p>    
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}

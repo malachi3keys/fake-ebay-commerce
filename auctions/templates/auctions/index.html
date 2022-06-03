@@ -14,22 +14,22 @@
                     <div>
                         <p>{{ item.description }}</p>    
                     </div>
-                    <div class="row">
-                        <div class="col-4">
-                            <p>Starting Bid: ${{ item.bid_start }}</p>
+                    <div class="d-flex flex-row">
+                        <div class="pe-2 me-5">
+                            <p>Current Bid: ${{ item.bid_start }}</p>
                         </div>
-                        <div class="col-2">
+                        <div class="pe-2">
                             <p>Seller: {{ item.user }}</p>    
                         </div>    
                     </div>
-                    <div class="row">
-                        <div class="col-2">
+                    <div class="d-flex flex-row">
+                        <div class="pe-2 my-2">
                             <p>Tags:</p>
                         </div>
-                        <div class="col">
-                            {% for cat in item.list_tag.all %}
-                                <button id="tags" class="btn btn-small mb-4">{{ cat }}</button>
-                            {% endfor %} 
+                        <div class="flex-fill">
+                            {% for tag in item.list_tag.all %}
+                                <a href="{% url 'tags' tag %}" id="tags" class="btn btn-small mb-4">{{ tag }}</a>
+                            {% endfor %}  
                         </div>
                     </div>  
                 </div>

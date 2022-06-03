@@ -12,3 +12,7 @@
 #tags:hover {
     border: 1px solid darkgray ;
 }
+
+.comments {
+    display: inline;
+}

@@ -1,0 +1,30 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    Create New Listing
+{% endblock %}
+
+{% block body %}
+    <h1>Create New Page</h1>
+    
+    <form action="{% url 'new' %}" method="POST">
+        {% csrf_token %}
+        <div class="files">
+            {{ form.post_title.label_tag }}
+            {{ form.post_title }}
+        </div>
+        
+
+        <div class="right-btn">
+            <button class="btn btn-dark" type="submit">Save</button>    
+        </div>        
+    </form>
+
+    <!-- {% if duplicate != "no" %} -->
+        <!-- <div class="files"> -->
+            <!-- {{ duplicate }} -->
+        <!-- </div> -->
+            
+    <!-- {% endif %} -->
+
+{% endblock %}

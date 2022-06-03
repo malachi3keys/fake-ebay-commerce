@@ -16,22 +16,22 @@
                     <div>
                         <p>{{ fave.description }}</p>    
                     </div>
-                    <div class="row">
-                        <div class="col-4">
-                            <p>Starting Bid: ${{ fave.bid_start }}</p>
+                    <div class="d-flex flex-row">
+                        <div class="pe-2 me-5">
+                            <p>Current Bid: ${{ fave.bid_start }}</p>
                         </div>
-                        <div class="col-2">
+                        <div class="pe-2">
                             <p>Seller: {{ fave.user }}</p>    
                         </div>    
                     </div>
-                    <div class="row">
-                        <div class="col-2">
+                    <div class="d-flex flex-row">
+                        <div class="pe-2 my-2">
                             <p>Tags:</p>
                         </div>
-                        <div class="col">
-                            {% for cat in fave.list_tag.all %}
-                                <button id="tags" class="btn btn-small mb-4">{{ cat }}</button>
-                            {% endfor %} 
+                        <div class="align-items-start">
+                            {% for tag in fave.list_tag.all %}
+                                    <a href="{% url 'tags' tag %}" id="tags" class="btn btn-small mb-4">{{ tag }}</a>
+                            {% endfor %}  
                         </div>
                     </div>  
                 </div>

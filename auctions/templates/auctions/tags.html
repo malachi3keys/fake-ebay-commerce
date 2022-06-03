@@ -1,0 +1,49 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Tags{% endblock %}
+
+{% block body %}
+    {% if id %}
+        <h2 class="h1 mb-3">{{ tag }}</h2>
+
+        <div class="mb-5 mx-4">
+            {% for item in listings %}
+                {% if item.active is True %}
+                    {% if item.img %}
+                        <img class="mt-2" src="{{ item.img }}" alt="{{ item.post_title }}">
+                    {% endif %}
+                    <div>
+                        <h3><a href="{% url 'list_item' item.id %}" class="text-decoration-none text-black">{{ item.post_title }}</a></h3>
+                        <div>
+                            <p>{{ item.description }}</p>    
+                        </div>
+                        <div class="d-flex flex-row">
+                            <div class="pe-2 me-5">
+                                <p>Current Bid: ${{ item.bid_start }}</p>
+                            </div>
+                            <div class="pe-2">
+                                <p>Seller: {{ item.user }}</p>    
+                            </div>    
+                        </div>
+                        <div class="d-flex flex-row">
+                            <div class="pe-2 my-2">
+                                <p>Tags:</p>
+                            </div>
+                            <div class="align-items-start">
+                                {% for tag in item.list_tag.all %}
+                                    <a href="{% url 'tags' tag %}" id="tags" class="btn btn-small mb-4">{{ tag }}</a>
+                                {% endfor %} 
+                            </div>
+                        </div>  
+                    </div>
+                {% endif %}    
+            {% empty %}
+                No listings using this tag
+            {% endfor %}    
+        </div>
+    {% else %}
+        <h2 class="h1 mb-3">"{{ tag }}" is not a valid tag</h2> 
+        <p class="mb-5 mx-4">Back to <a href="{% url 'index' %}" class="text-decoration-none">Active Listings</a></p>
+    {% endif %}
+
+{% endblock %}

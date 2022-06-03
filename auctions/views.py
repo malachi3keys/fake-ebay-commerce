@@ -2,11 +2,19 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.shortcuts import redirect, render
-from .models import Bid, Comment, Listing, Tag, User,  Watchlist
+from django import forms
+from .models import Bid, Comment, Listing, Tag, User, Watchlist
+
+class ListingForm(forms.ModelForm):
+    class Meta:
+        model = Listing
+        fields = ["post_title", "description","bid_start", "img", "list_tag"]
 
 
 def index(request):
     auction_items = Listing.objects.all()
+    # how to organize bids? want to show current bid but hard to track/line up
+    # when not in same order and multiple bids
     return render(request, "auctions/index.html", {
         "items": auction_items
     })
@@ -73,8 +81,28 @@ def list_item(request, list_id):
         return redirect("index")
     
     else:
+        item = Listing.objects.get(pk=list_id)
+        comments = Comment.objects.filter(listing=list_id)
+        bids = Bid.objects.filter(listing=list_id)
+        top_bid = bids.last()
+
+        if top_bid is None:
+            top_bid = item.bid_start
+
+        user_check = request.user.username
+
+        if user_check is not None and user_check == item.user:
+            canedit = True
+        else: 
+            canedit = False
+
         return render(request, "auctions/listing.html", {
-            "item": Listing.objects.get(pk=list_id)
+            "item": item,
+            "bids": bids,
+            "top": top_bid,
+            "comments": comments,
+            "id": list_id,
+            "editor": canedit,
         })
 
 
@@ -93,3 +121,67 @@ def watchlist(request):
         "faves": faves,
         "id": watcher_id
     })
+
+
+def tags(request, tag_name): 
+    # check that there is a tag with that name
+    try:
+        tag_id = Tag.objects.get(post_tag=tag_name)
+    except Tag.DoesNotExist:
+        tag_id = None
+
+    #if the tag exists, try to find listings with that tag
+    if tag_id:
+        try: 
+            listings = Listing.objects.filter(list_tag=tag_id)
+        except Listing.DoesNotExist:
+            listings = None
+    else:
+        listings = None
+
+    return render(request, "auctions/tags.html", {
+        "tag": tag_name,
+        "listings": listings,
+        "id": tag_id
+    })
+
+
+@login_required(login_url="login")
+def edit(request, list_id):
+    item = Listing.objects.get(pk=list_id)
+    #edit button from listing, prepopulated w/listing info
+    if request.method =='GET': 
+        f = ListingForm(instance=item)
+
+        return render(request, "auctions/edit.html", {
+            "form": f,
+            "item": item
+        })
+
+    #when save button pressed, save listing & redirect to listing    
+    elif request.method == 'POST':
+        f = ListingForm(request.POST, instance=item)
+        
+        if f.is_valid():
+            f.save()
+            return redirect('list_item', list_id)
+
+
+@login_required(login_url="login")
+def new(request):
+    if request.method =='GET': 
+        f = ListingForm()
+
+        return render(request, "auctions/new.html", {
+            "form": f
+        })
+
+    #when save button pressed, save listing & redirect to listing    
+    elif request.method == 'POST':
+        f = ListingForm(request.POST)
+        
+        if f.is_valid():
+            #check for duplicates and make post_title unique in models?
+            f.save()
+            newest = Listing.objects.count()
+            return redirect('list_item', newest)
