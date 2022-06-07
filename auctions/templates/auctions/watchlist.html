@@ -9,7 +9,7 @@
         {% for fave in faves.listing.all %}
             
                 {% if fave.img %}
-                    <img class="mt-2" src="{{ fave.img }}" alt="{{ fave.post_title }}">
+                    <img class="mt-2" src="{{ fave.img.url }}" alt="{{ fave.post_title }}">
                 {% endif %}
                 <div>
                     <h3><a href="{% url 'list_item' fave.id %}" class="text-decoration-none text-black">{{ fave.post_title }}</a></h3>

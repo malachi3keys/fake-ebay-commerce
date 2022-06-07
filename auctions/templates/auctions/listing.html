@@ -6,7 +6,7 @@
     <h2 class="h1 mb-3">{{ item.post_title }}</h2>
     
     {% if item.img %}
-        <img class="mt-2" src="{{ item.img }}" alt="{{ item.post_title }}">
+        <img class="mb-3" src="{{ item.img.url }}" alt="{{ item.post_title }}">
     {% endif %}
     <div>
         <div>
@@ -34,7 +34,7 @@
     
     {% if editor is True %}
         <div class="my-5">           
-            <button class="btn btn-small mb-4"><a href="{% url 'edit' id %}">Edit</a></button>
+            <a href="{% url 'edit' item.id %}" class="btn btn-small mb-4 btn-dark">Edit</a>
         </div>
     {% endif %}
     

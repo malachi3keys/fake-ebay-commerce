@@ -16,3 +16,15 @@
 .comments {
     display: inline;
 }
+
+textarea {
+    display: block;
+}
+
+select {
+    display: block;
+}
+
+img { 
+    max-width: 500px;
+}

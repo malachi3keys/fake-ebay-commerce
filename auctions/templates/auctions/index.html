@@ -7,7 +7,7 @@
         {% for item in items %}
             {% if item.active is True %}
                 {% if item.img %}
-                    <img class="mt-2" src="{{ item.img }}" alt="{{ item.post_title }}">
+                    <img class=" my-3" src="{{ item.img.url }}" alt="{{ item.post_title }}">
                 {% endif %}
                 <div>
                     <h3><a href="{% url 'list_item' item.id %}" class="text-decoration-none text-black">{{ item.post_title }}</a></h3>

@@ -17,8 +17,7 @@ class Listing(models.Model):
     post_title = models.CharField(max_length=64)
     description = models.TextField(max_length=500)
     bid_start = models.DecimalField(max_digits=10, decimal_places=2)
-    # img = models.ImageField
-    img = models.URLField(max_length=200, blank=True)
+    img = models.ImageField(upload_to='images/', max_length=200, null=True, blank=True)
     list_tag = models.ManyToManyField(Tag, related_name="category")
     active = models.BooleanField(default=True)
 

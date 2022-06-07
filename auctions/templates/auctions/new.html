@@ -1,30 +1,32 @@
 {% extends "auctions/layout.html" %}
 
-{% block title %}
-    Create New Listing
-{% endblock %}
+{% block title %}Create New Listing{% endblock %}
 
 {% block body %}
     <h1>Create New Page</h1>
     
-    <form action="{% url 'new' %}" method="POST">
-        {% csrf_token %}
-        <div class="files">
-            {{ form.post_title.label_tag }}
-            {{ form.post_title }}
-        </div>
-        
-
-        <div class="right-btn">
-            <button class="btn btn-dark" type="submit">Save</button>    
-        </div>        
-    </form>
-
-    <!-- {% if duplicate != "no" %} -->
-        <!-- <div class="files"> -->
-            <!-- {{ duplicate }} -->
-        <!-- </div> -->
+    <div class="my-4"> 
+        <form action="{% url 'new' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
             
-    <!-- {% endif %} -->
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {{ field }}
+                </div>
+            {% endfor %}
 
+            <div class="mt-3">
+                <button class="btn btn-dark" type="submit">Save</button>    
+            </div>        
+        </form>
+
+        <!-- {% if duplicate != "no" %} -->
+            <!-- <div class="files"> -->
+                <!-- {{ duplicate }} -->
+            <!-- </div> -->
+                
+        <!-- {% endif %} -->    
+    </div>
+    
 {% endblock %}

@@ -89,7 +89,7 @@ def list_item(request, list_id):
         if top_bid is None:
             top_bid = item.bid_start
 
-        user_check = request.user.username
+        user_check = request.user
 
         if user_check is not None and user_check == item.user:
             canedit = True
@@ -101,25 +101,25 @@ def list_item(request, list_id):
             "bids": bids,
             "top": top_bid,
             "comments": comments,
-            "id": list_id,
             "editor": canedit,
         })
 
 
 @login_required(login_url="login")
 def watchlist(request):
-    watcher_name = request.user.username
-    watcher_id = User.objects.get(username=watcher_name)
+    watcher = request.user
+    # watcher_name = request.user.username
+    # watcher_id = User.objects.get(username=watcher_name)
     
     # In case there is a user that doesn't have a watch list
     try:
-        faves = Watchlist.objects.get(user=watcher_id)
+        # faves = Watchlist.objects.get(user=watcher_id) 
+        faves = Watchlist.objects.get(user=watcher) 
     except Watchlist.DoesNotExist:
         faves = None
 
     return render(request, "auctions/watchlist.html", {
-        "faves": faves,
-        "id": watcher_id
+        "faves": faves
     })
 
 
@@ -149,22 +149,27 @@ def tags(request, tag_name):
 @login_required(login_url="login")
 def edit(request, list_id):
     item = Listing.objects.get(pk=list_id)
-    #edit button from listing, prepopulated w/listing info
-    if request.method =='GET': 
-        f = ListingForm(instance=item)
 
-        return render(request, "auctions/edit.html", {
-            "form": f,
-            "item": item
-        })
+    if request.user == item.user:
+        #edit button from listing, prepopulated w/listing info
+        if request.method =='GET': 
+            f = ListingForm(instance=item)
 
-    #when save button pressed, save listing & redirect to listing    
-    elif request.method == 'POST':
-        f = ListingForm(request.POST, instance=item)
-        
-        if f.is_valid():
-            f.save()
-            return redirect('list_item', list_id)
+            return render(request, "auctions/edit.html", {
+                "form": f,
+                "item": item
+            })
+
+        #when save button pressed, save listing & redirect to listing    
+        elif request.method == 'POST':
+            f = ListingForm(request.POST, request.FILES, instance=item)
+            
+            if f.is_valid():
+                f.save()
+                return redirect('list_item', list_id)
+    
+    else:
+        return redirect('list_item', list_id)
 
 
 @login_required(login_url="login")
@@ -178,10 +183,13 @@ def new(request):
 
     #when save button pressed, save listing & redirect to listing    
     elif request.method == 'POST':
-        f = ListingForm(request.POST)
+        f = ListingForm(request.POST, request.FILES)
         
         if f.is_valid():
             #check for duplicates and make post_title unique in models?
-            f.save()
-            newest = Listing.objects.count()
-            return redirect('list_item', newest)
+            newlist = f.save(commit=False)
+            newlist.user = request.user
+            newlist.save()
+    
+            recent = Listing.objects.count()
+            return redirect('list_item', recent)
