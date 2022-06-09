@@ -9,6 +9,31 @@ class ListingForm(forms.ModelForm):
     class Meta:
         model = Listing
         fields = ["post_title", "description","bid_start", "img", "list_tag"]
+        labels = {
+            "post_title": "Title",
+            "bid_start": "Starting Bid",
+            "img": "Image",
+            "list_tag": "Tags (Ctrl+Click to select multiple)"
+        }
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["body"]
+        labels = {
+            "body": "",
+        }
+        widgets = {
+            "body": forms.Textarea(attrs={"cols": 100, "rows": 2, "placeholder":"Leave a comment"})
+        }
+
+class BidForm(forms.ModelForm):
+    class Meta:
+        model = Bid
+        fields = ["dollar"]
+        labels = {
+            "dollar": "Make a bid",
+        }
 
 
 def index(request):
@@ -77,9 +102,10 @@ def register(request):
 
 
 def list_item(request, list_id):
-    if list_id > Listing.objects.count():
-        return redirect("index")
-    
+    listNum = Listing.objects.count()
+
+    if list_id > listNum:
+        return redirect("index")  
     else:
         item = Listing.objects.get(pk=list_id)
         comments = Comment.objects.filter(listing=list_id)
@@ -87,39 +113,86 @@ def list_item(request, list_id):
         top_bid = bids.last()
 
         if top_bid is None:
-            top_bid = item.bid_start
-
+            top_bid = item.bid_start     
+        
+    if request.method =='GET':
+        
+        # check if user is signed in
         user_check = request.user
 
-        if user_check is not None and user_check == item.user:
-            canedit = True
-        else: 
-            canedit = False
+        if user_check: 
+            # check user is the same as the listing
+            if user_check == item.user:
+                canedit = True
+            else: 
+                canedit = False
 
+            # create forms for the comments and bids
+            cform = CommentForm()
+            bform = BidForm()
+
+        else:   
+            cform = None
+            bform = None
+
+        
         return render(request, "auctions/listing.html", {
             "item": item,
             "bids": bids,
             "top": top_bid,
             "comments": comments,
             "editor": canedit,
+            "cform": cform,
+            "bform": bform,
         })
+   
+    # only show comment/bid input if logged in?
+    elif request.method =='POST': 
+        if request.POST.get("body"):
+            cform = CommentForm(request.POST)
+            
+            if cform.is_valid():
+                newComment = cform.save(commit=False)
+                newComment.user = request.user
+                newComment.listing = item
+                newComment.save()
+                # redirect('listing', list_id) 
+
+        elif request.POST.get("dollar"):
+            bform = BidForm(request.POST)                
+
+            if bform.is_valid():
+                newBid = bform.save(commit=False)
+                newBid.bidder = request.user
+                newBid.listing = item
+                newBid.save()
+
+        return redirect('list_item', list_id)
+
+        
 
 
 @login_required(login_url="login")
 def watchlist(request):
     watcher = request.user
-    # watcher_name = request.user.username
-    # watcher_id = User.objects.get(username=watcher_name)
     
     # In case there is a user that doesn't have a watch list
-    try:
-        # faves = Watchlist.objects.get(user=watcher_id) 
+    try: 
         faves = Watchlist.objects.get(user=watcher) 
     except Watchlist.DoesNotExist:
         faves = None
 
     return render(request, "auctions/watchlist.html", {
         "faves": faves
+    })
+
+
+
+def alltags(request):
+    taglist = Tag.objects.all()
+
+    return render(request, "auctions/alltags.html", {
+        "tags": taglist
     })
 
 
@@ -181,15 +254,15 @@ def new(request):
             "form": f
         })
 
-    #when save button pressed, save listing & redirect to listing    
+    #when save button pressed, save info & redirect to new listing page    
     elif request.method == 'POST':
         f = ListingForm(request.POST, request.FILES)
         
         if f.is_valid():
             #check for duplicates and make post_title unique in models?
-            newlist = f.save(commit=False)
-            newlist.user = request.user
-            newlist.save()
+            newList = f.save(commit=False)
+            newList.user = request.user
+            newList.save()
     
             recent = Listing.objects.count()
             return redirect('list_item', recent)

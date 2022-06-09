@@ -1,18 +1,18 @@
 {% extends "auctions/layout.html" %}
 
-{% block title %}Create New Listing{% endblock %}
+{% block title %}New Listing{% endblock %}
 
 {% block body %}
-    <h1>Create New Page</h1>
+    <h1>Create New Listing</h1>
     
     <div class="my-4"> 
         <form action="{% url 'new' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             
             {% for field in form %}
-                <div class="mb-3">
-                    {{ field.label_tag }}
-                    {{ field }}
+                <div class="my-3">
+                    <div><label class="me-2">{{ field.label_tag }}</label></div>
+                    <div>{{ field }}</div>
                 </div>
             {% endfor %}
 

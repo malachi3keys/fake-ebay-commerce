@@ -24,11 +24,11 @@
             <div class="pe-2 my-2">
                 <p>Tags:</p>
             </div>
-            <div class="align-items-start">
-                {% for tag in item.list_tag.all %}
-                    <a href="{% url 'tags' tag %}" id="tags" class="btn btn-small mb-4">{{ tag }}</a>
-                {% endfor %} 
-            </div>
+            {% for tag in item.list_tag.all %}
+                <div class="tags me-2">
+                    <a href="{% url 'tags' tag %}" class="btn btn-small mb-4 tagbutton">{{ tag }}</a>
+                </div>
+            {% endfor %} 
         </div>  
     </div>
     
@@ -51,11 +51,31 @@
 
     <div class="my-5">
         <h3 class="mb-3">Comments</h3>
-        {% for comment in comments.all %}
-            <div class="my-2 mx-4"> 
-                <p class="fw-bold comments">{{ comment.user }}</p>
-                <p class="comments ms-2">{{ comment.body }}</p>    
-            </div>
-        {% endfor %}
+
+        <div class="my-4"> 
+                <div class="mx-2">
+                    {% if cform %}
+                        <form action="{% url 'list_item' item.id %}" method="POST">
+                            {% csrf_token %}
+                            
+                            <div class="my-1">{{ cform }}</div>
+                            <div class="mt-2">
+                                <button class="btn btn-dark btn-small" type="submit">Comment</button>    
+                            </div>         
+                        </form>
+                    {% else %}
+                            Must be signed in to comment 
+                    {% endif %} 
+                </div>
+                <div class="mt-3">
+                    {% for comment in comments.all %}
+                        <div class="my-2 mx-4"> 
+                            <p class="fw-bold comments">{{ comment.user }}</p>
+                            <p class="comments ms-2">{{ comment.body }}</p>    
+                        </div>
+                    {% endfor %}
+                </div>
+        </div>
     </div>
+
 {% endblock %}

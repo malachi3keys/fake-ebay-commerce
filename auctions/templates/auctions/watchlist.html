@@ -7,7 +7,7 @@
 
     <div class="mb-5 mx-4">
         {% for fave in faves.listing.all %}
-            
+            <div>
                 {% if fave.img %}
                     <img class="mt-2" src="{{ fave.img.url }}" alt="{{ fave.post_title }}">
                 {% endif %}
@@ -28,18 +28,17 @@
                         <div class="pe-2 my-2">
                             <p>Tags:</p>
                         </div>
-                        <div class="align-items-start">
-                            {% for tag in fave.list_tag.all %}
-                                    <a href="{% url 'tags' tag %}" id="tags" class="btn btn-small mb-4">{{ tag }}</a>
-                            {% endfor %}  
-                        </div>
+                        {% for tag in fave.list_tag.all %}
+                            <div class="tags me-2">
+                                <a href="{% url 'tags' tag %}" class="btn btn-small mb-4 tagbutton">{{ tag }}</a>
+                            </div>
+                        {% endfor %} 
                     </div>  
                 </div>
-               
+            </div>
         {% empty %}
             No watched listings
         {% endfor %}    
     </div>
-    
 
 {% endblock %}

@@ -1,0 +1,18 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Tags{% endblock %}
+
+{% block body %}
+    <h2 class="h1 mb-3">Tags</h2>
+
+    <div class="mb-5 mx-4">
+        {% for tag in tags %}            
+            <div class="tags me-2">
+                <a href="{% url 'tags' tag %}" class="btn btn-small mb-4 tagbutton">{{ tag }}</a>
+            </div>         
+        {% empty %}
+            No tags found
+        {% endfor %}    
+    </div>
+    
+{% endblock %}

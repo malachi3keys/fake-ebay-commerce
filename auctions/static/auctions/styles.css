@@ -4,12 +4,16 @@
     max-width: 600px;
 }
 
-#tags {
+.tags {
+    display: inline;
+}
+
+.tagbutton {
     background-color: rgb(230, 228, 228);
     border-radius: 20px;
 }
 
-#tags:hover {
+.tagbutton:hover {
     border: 1px solid darkgray ;
 }
 
@@ -17,12 +21,8 @@
     display: inline;
 }
 
-textarea {
-    display: block;
-}
-
-select {
-    display: block;
+textarea, select {
+    margin-top: 5px;
 }
 
 img { 

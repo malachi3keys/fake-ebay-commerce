@@ -8,35 +8,37 @@
 
         <div class="mb-5 mx-4">
             {% for item in listings %}
-                {% if item.active is True %}
-                    {% if item.img %}
-                        <img class="my-3" src="{{ item.img.url }}" alt="{{ item.post_title }}">
-                    {% endif %}
-                    <div>
-                        <h3><a href="{% url 'list_item' item.id %}" class="text-decoration-none text-black">{{ item.post_title }}</a></h3>
+                <div>
+                    {% if item.active is True %}
+                        {% if item.img %}
+                            <img class="my-3" src="{{ item.img.url }}" alt="{{ item.post_title }}">
+                        {% endif %}
                         <div>
-                            <p>{{ item.description }}</p>    
-                        </div>
-                        <div class="d-flex flex-row">
-                            <div class="pe-2 me-5">
-                                <p>Current Bid: ${{ item.bid_start }}</p>
+                            <h3><a href="{% url 'list_item' item.id %}" class="text-decoration-none text-black">{{ item.post_title }}</a></h3>
+                            <div>
+                                <p>{{ item.description }}</p>    
                             </div>
-                            <div class="pe-2">
-                                <p>Seller: {{ item.user }}</p>    
-                            </div>    
-                        </div>
-                        <div class="d-flex flex-row">
-                            <div class="pe-2 my-2">
-                                <p>Tags:</p>
+                            <div class="d-flex flex-row">
+                                <div class="pe-2 me-5">
+                                    <p>Current Bid: ${{ item.bid_start }}</p>
+                                </div>
+                                <div class="pe-2">
+                                    <p>Seller: {{ item.user }}</p>    
+                                </div>    
                             </div>
-                            <div class="align-items-start">
+                            <div class="d-flex flex-row">
+                                <div class="pe-2 my-2">
+                                    <p>Tags:</p>
+                                </div>
                                 {% for tag in item.list_tag.all %}
-                                    <a href="{% url 'tags' tag %}" id="tags" class="btn btn-small mb-4">{{ tag }}</a>
+                                    <div class="tags me-2">
+                                        <a href="{% url 'tags' tag %}" class="btn btn-small mb-4 tagbutton">{{ tag }}</a>
+                                    </div>
                                 {% endfor %} 
-                            </div>
-                        </div>  
-                    </div>
-                {% endif %}    
+                            </div>  
+                        </div>
+                    {% endif %}    
+                </div>
             {% empty %}
                 No listings using this tag
             {% endfor %}    
