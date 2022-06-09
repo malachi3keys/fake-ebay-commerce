@@ -33,31 +33,53 @@
     </div>
     
     {% if editor is True %}
-        <div class="my-5">           
+        <div class="mb-3">           
             <a href="{% url 'edit' item.id %}" class="btn btn-small mb-4 btn-dark">Edit</a>
         </div>
     {% endif %}
     
-    <div class="my-5">
+    <div class="mb-5">
         <h3 class="mb-3">Bids</h3>
-        {% for bid in bids.all %}
-            <div class="my-2 mx-4"> 
-                <p class="comments">${{ bid.dollar }}</p>   
-            </div>
-        {% empty %}
-            No Bids
-        {% endfor %}
+        <div class="mx-4">
+            {% for bid in bids.all %}
+                <div class="my-2"> 
+                    <p class="comments">${{ bid.dollar }}</p>   
+                </div>
+            {% empty %}
+                No Bids
+            {% endfor %}    
+        </div>
+        <div class="mt-3 mx-4">
+            {% if message %}
+                <div>{{ message }}</div>
+            {% endif %} 
+            {% if bform %}
+                <form action="{% url 'list_item' item.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="d-flex">
+                       <div class="my-1">{{ bform }}</div>
+                        <div class="ms-2">
+                            <button class="btn btn-dark btn-small" type="submit">Bid</button>    
+                        </div>  
+                    </div>
+                            
+                </form>
+            {% else %}
+                {% if user is None %}       
+                    Must be signed in to bid
+                {% endif %} 
+            {% endif %} 
+        </div>
     </div>
 
     <div class="my-5">
         <h3 class="mb-3">Comments</h3>
 
         <div class="my-4"> 
-                <div class="mx-2">
+                <div class="mx-4">
                     {% if cform %}
                         <form action="{% url 'list_item' item.id %}" method="POST">
-                            {% csrf_token %}
-                            
+                            {% csrf_token %}                            
                             <div class="my-1">{{ cform }}</div>
                             <div class="mt-2">
                                 <button class="btn btn-dark btn-small" type="submit">Comment</button>    
@@ -67,9 +89,9 @@
                             Must be signed in to comment 
                     {% endif %} 
                 </div>
-                <div class="mt-3">
+                <div class="mt-3 mx-4">
                     {% for comment in comments.all %}
-                        <div class="my-2 mx-4"> 
+                        <div class="my-2"> 
                             <p class="fw-bold comments">{{ comment.user }}</p>
                             <p class="comments ms-2">{{ comment.body }}</p>    
                         </div>
