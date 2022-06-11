@@ -12,19 +12,19 @@
 
     <form action="{% url 'register' %}" method="post">
         {% csrf_token %}
-        <div class="mb-3 formw">
+        <div class="mb-3 login-register">
             <label for="userid" class="form-label visually-hidden">Username</label>
             <input class="form-control" autofocus type="text" name="username" placeholder="Username" id="userid" required>
         </div>
-        <div class="mb-3 formw">
+        <div class="mb-3 login-register">
             <label for="email" class="form-label visually-hidden">Username</label>
             <input class="form-control" type="email" name="email" placeholder="Email Address" id="email" required>
         </div>
-        <div class="mb-3 formw">
+        <div class="mb-3 login-register">
             <label for="pass1" class="form-label visually-hidden">Password</label>
             <input class="form-control" type="password" name="password" placeholder="Password" id="pass1" required>
         </div>
-        <div class="mb-3 formw">
+        <div class="mb-3 login-register">
             <label for="pass2" class="form-label visually-hidden">Confirm Password</label>
             <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password" id="pass2" required>
         </div>

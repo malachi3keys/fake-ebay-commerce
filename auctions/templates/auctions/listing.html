@@ -6,21 +6,23 @@
     <h2 class="h1 mb-3">{{ item.post_title }}</h2>
     
     {% if item.img %}
-        <img class="mb-3" src="{{ item.img.url }}" alt="{{ item.post_title }}">
+        <div class="">
+            <img class="img-single my-3" src="{{ item.img.url }}" alt="{{ item.post_title }}">
+        </div>
     {% endif %}
-    <div>
+    <div class="">
         <div>
             <p>{{ item.description }}</p>    
         </div>
-        <div class="d-flex flex-row">
-            <div class="pe-2 me-5">
+        <div class="d-flex">
+            <div class="me-5">
                 <p>Current Bid: ${{ top }}</p>
             </div>
-            <div class="pe-2">
+            <div class="">
                 <p>Seller: {{ item.user }}</p>    
             </div>    
         </div>
-        <div class="d-flex flex-row">
+        <div class="d-flex">
             <div class="pe-2 my-2">
                 <p>Tags:</p>
             </div>
@@ -28,7 +30,7 @@
                 <div class="tags me-2">
                     <a href="{% url 'tags' tag %}" class="btn btn-small mb-4 tagbutton">{{ tag }}</a>
                 </div>
-            {% endfor %} 
+            {% endfor %}  
         </div>  
     </div>
     

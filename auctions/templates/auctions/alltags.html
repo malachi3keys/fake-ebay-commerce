@@ -5,7 +5,7 @@
 {% block body %}
     <h2 class="h1 mb-3">Tags</h2>
 
-    <div class="mb-5 mx-4">
+    <div class="mb-5 mx-4 d-flex flex-wrap">
         {% for tag in tags %}            
             <div class="tags me-2">
                 <a href="{% url 'tags' tag %}" class="btn btn-small mb-4 tagbutton">{{ tag }}</a>

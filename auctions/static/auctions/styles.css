@@ -1,7 +1,17 @@
-.formw {
-    width: 50%;
-    min-width: 450px;
-    max-width: 600px;
+.img-adj {
+    text-align: center;
+}
+
+.img-mult { 
+    max-width: 350px;
+}
+.img-single {
+    max-width: 500px;
+}
+
+.alisting {
+    width: 400px;
+    padding: 0 25px;
 }
 
 .tags {
@@ -17,14 +27,24 @@
     border: 1px solid darkgray ;
 }
 
+.login-register {
+    width: 50%;
+    min-width: 450px;
+    max-width: 600px;
+}
+
 .comments {
     display: inline;
+}
+
+.test {
+    
 }
 
 textarea, select {
     margin-top: 5px;
 }
 
-img { 
-    max-width: 500px;
+input[type=text] {
+    min-width: 450px;
 }

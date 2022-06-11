@@ -11,11 +11,11 @@
 
     <form action="{% url 'login' %}" method="post">
         {% csrf_token %}
-        <div class="mb-3 formw">
+        <div class="mb-3 login-register">
             <label for="userid" class="form-label visually-hidden">Username</label>
             <input autofocus class="form-control" type="text" name="username" placeholder="Username" id="userid">
         </div>
-        <div class="mb-3 formw">
+        <div class="mb-3 login-register">
             <label for="passid" class="form-label visually-hidden">Password</label>
             <input class="form-control" type="password" name="password" placeholder="Password" id="passid">
         </div>
