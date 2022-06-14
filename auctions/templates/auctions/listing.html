@@ -3,7 +3,19 @@
 {% block title %}{{ item.title }}{% endblock %}
 
 {% block body %}
-    <h2 class="h1 mb-3">{{ item.post_title }}</h2>
+    <div class="mb-3">
+        <h2 class="h1">{{ item.post_title }}</h2>
+        
+        {% if not item.active %}
+        <h5>(Closed)</h5>
+        {% endif %}    
+        
+        <form action="{% url 'list_item' item.id %}" method="POST">
+            {% csrf_token %}
+            <button class="btn" type="submit" id="watched" name="watched">❤️ Add to Watch list</button>
+            <!-- <a role="button" name="watched" class="text-decoration-none">❤️ Add to Watch list</a>       -->
+        </form>
+    </div>
     
     {% if item.img %}
         <div class="">
@@ -16,7 +28,11 @@
         </div>
         <div class="d-flex">
             <div class="me-5">
-                <p>Current Bid: ${{ top }}</p>
+                {% if item.active %}
+                    <p>Top Bid: ${{ top }}</p>
+                {% else %}
+                    <p>Final Bid: ${{ top }}</p>
+                {% endif %}
             </div>
             <div class="">
                 <p>Seller: {{ item.user }}</p>    
@@ -33,52 +49,62 @@
             {% endfor %}  
         </div>  
     </div>
-    
-    {% if editor is True %}
-        <div class="mb-3">           
-            <a href="{% url 'edit' item.id %}" class="btn btn-small mb-4 btn-dark">Edit</a>
-        </div>
-    {% endif %}
-    
-    <div class="mb-5">
-        <h3 class="mb-3">Bids</h3>
-        <div class="mx-4">
-            {% for bid in bids.all %}
-                <div class="my-2"> 
-                    <p class="comments">${{ bid.dollar }}</p>   
-                </div>
-            {% empty %}
-                No Bids
-            {% endfor %}    
-        </div>
-        <div class="mt-3 mx-4">
-            {% if message %}
-                <div>{{ message }}</div>
-            {% endif %} 
-            {% if bform %}
-                <form action="{% url 'list_item' item.id %}" method="POST">
-                    {% csrf_token %}
-                    <div class="d-flex">
-                       <div class="my-1">{{ bform }}</div>
-                        <div class="ms-2">
-                            <button class="btn btn-dark btn-small" type="submit">Bid</button>    
-                        </div>  
+
+    {% if item.active %}
+        {% if editor %}
+            <div class="mb-3">           
+                <a href="{% url 'edit' item.id %}" class="btn btn-small mb-4 btn-dark">Edit</a>
+            </div>
+        {% endif %}
+
+        <div class="mb-5">
+            <div>
+                <h3 class="mb-3 d-inline">Bids</h3>    
+                <a class="d-inline text-decoration-none" data-bs-toggle="collapse" href="#collapseBids" aria-expanded="false" aria-controls="collapseBids">
+                    (Show/Hide)
+                </a>
+            </div>
+            
+            <div class="collapse" id="collapseBids">
+                <div class="card card-body border-0">
+                    <div class="mx-4">
+                    {% for bid in bids.all %}
+                        <div class="my-2"> 
+                            <p class="comments">${{ bid.dollar }}</p>   
+                        </div>
+                    {% empty %}
+                        No Bids
+                    {% endfor %}    
                     </div>
-                            
-                </form>
-            {% else %}
-                {% if user is None %}       
-                    Must be signed in to bid
-                {% endif %} 
-            {% endif %} 
+                    <div class="mt-3 mx-4">
+                        {% if message %}
+                            <div>{{ message }}</div>
+                        {% endif %} 
+                        {% if bform %}
+                            <form action="{% url 'list_item' item.id %}" method="POST">
+                                {% csrf_token %}
+                                <div class="d-flex">
+                                <div class="my-1">{{ bform }}</div>
+                                    <div class="ms-2">
+                                        <button class="btn btn-dark btn-small" type="submit">Bid</button>    
+                                    </div>  
+                                </div>     
+                            </form>
+                        {% else %}
+                            {% if user is None %}       
+                                Must be signed in to bid
+                            {% endif %} 
+                        {% endif %} 
+                    </div>    
+                </div>
+              </div>
+            
         </div>
-    </div>
 
-    <div class="my-5">
-        <h3 class="mb-3">Comments</h3>
-
-        <div class="my-4"> 
-                <div class="mx-4">
+        <div class="my-5">
+            <h3 class="mb-3">Comments</h3>
+            <div class="my-4"> 
+                <div class="mx-4 d-flex">
                     {% if cform %}
                         <form action="{% url 'list_item' item.id %}" method="POST">
                             {% csrf_token %}                            
@@ -97,9 +123,29 @@
                             <p class="fw-bold comments">{{ comment.user }}</p>
                             <p class="comments ms-2">{{ comment.body }}</p>    
                         </div>
+                    {% empty %}
+                        No Comments
                     {% endfor %}
                 </div>
+            </div>
         </div>
-    </div>
+    
+    {% else %}
+        <div class="my-5">
+            <h3 class="mb-3">Comments</h3>
+            <div class="my-4"> 
+                <div class="mt-3 mx-4">
+                    {% for comment in comments.all %}
+                        <div class="my-2"> 
+                            <p class="fw-bold comments">{{ comment.user }}</p>
+                            <p class="comments ms-2">{{ comment.body }}</p>    
+                        </div>
+                    {% empty %}
+                        No Comments
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
 {% endblock %}

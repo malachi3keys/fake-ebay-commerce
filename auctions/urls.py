@@ -12,4 +12,5 @@ urlpatterns = [
     path("new", views.new, name="new"),
     path("<int:list_id>", views.list_item, name="list_item"),
     path("<int:list_id>/edit", views.edit, name="edit"),
+    path("closed", views.closed, name="closed")
 ]

@@ -10,7 +10,7 @@
             <div class="alisting mb-4">
                 {% if fave.img %}
                     <div class="img-adj">
-                        <img class="img-mult my-3" src="{{ fave.img.url }}" alt="{{ fave.post_title }}">
+                        <a href="{% url 'list_item' fave.id %}"><img class="my-3 img-mult" src="{{ fave.img.url }}" alt="{{ fave.post_title }}"></a>
                     </div>
                 {% endif %}
                 <div>

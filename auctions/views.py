@@ -103,7 +103,8 @@ def register(request):
         login(request, user)
 
         #Create a watch list for new users
-        Watchlist.objects.create(user=user)
+        newWatch = Watchlist.objects.create(user=user)
+        newWatch.save()
         
         return redirect("index")
     else:
@@ -112,11 +113,17 @@ def register(request):
 
 def list_item(request, list_id):
     listNum = Listing.objects.count()
+    
+    # check there is a listing with requested id
+    try:
+        item = Listing.objects.get(pk=list_id)
+        dne = False
+    except Listing.DoesNotExist:
+        dne = True
 
-    if list_id > listNum:
+    if list_id > listNum or dne:
         return redirect("index")  
     else:
-        item = Listing.objects.get(pk=list_id)
         comments = Comment.objects.filter(listing=list_id)
         bids = Bid.objects.filter(listing=list_id)
 
@@ -165,6 +172,7 @@ def list_item(request, list_id):
     elif request.method =='POST': 
         body = request.POST.get("body")
         dollar = request.POST.get("dollar")
+        watched = request.POST.get("watched")
 
         if body:
             cform = CommentForm(request.POST)
@@ -186,10 +194,29 @@ def list_item(request, list_id):
                     newBid.save()
                 else:
                     bform.add_error("dollar", "Bid must be greater than highest bid")
-                    # print(bform.errors)
-                    # return render(request, "auctions/listing.html", {
-                    #      "message": "Bid must be greater than highest bid",
-                    #  })
+
+        elif watched:
+            print("hey")
+            user = request.user
+            if user.is_authenticated:
+                try: 
+                    watchCheck = Watchlist.objects.get(user=user) 
+                except Watchlist.DoesNotExist:
+                    watchCheck = None
+
+                #Create a watch list if user doesn't have one
+                if watchCheck is None: 
+                    newWatch = Watchlist.objects.create(user=user)
+                    newWatch.save()
+
+                faves = Watchlist.objects.get(user=user)
+
+                # add listing to watch list if not already there
+                if not Watchlist.objects.filter(user=user).filter(listing=list_id):
+                    faves.listing.add(list_id)
+                
+            else:
+                return redirect('login')
 
         return redirect('list_item', list_id)
 
@@ -288,3 +315,12 @@ def new(request):
     
             recent = Listing.objects.count()
             return redirect('list_item', recent)
+
+def closed(request):
+    # check if there are any closed listings
+    closed_items = Listing.objects.filter(active=False)
+
+    return render(request, "auctions/closed.html", {
+        "items": closed_items,
+        # "test": test
+    })

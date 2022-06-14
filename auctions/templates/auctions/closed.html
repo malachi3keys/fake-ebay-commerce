@@ -1,15 +1,15 @@
 {% extends "auctions/layout.html" %}
 
-{% block title %}Tags{% endblock %}
+{% block title %}Closed Listings{% endblock %}
 
 {% block body %}
-    {% if id %}
-        <h2 class="h1 mb-3">Tag: "{{ tag }}"</h2>
+    <h2 class="h1 mb-3">Closed Listings</h2>
 
+   {% if items %}
         <div class="mb-5 d-flex flex-wrap justify-content-center">
-            {% for item in listings %}
-                <div class="alisting mb-4">
-                    {% if item.active is True %}
+            {% for item in items %}
+                {% if not item.active %}
+                    <div class="alisting mb-4">
                         {% if item.img %}
                             <div class="img-adj">
                                 <a href="{% url 'list_item' item.id %}"><img class="my-3 img-mult" src="{{ item.img.url }}" alt="{{ item.post_title }}"></a>
@@ -39,15 +39,12 @@
                                 {% endfor %}  
                             </div>  
                         </div>
-                    {% endif %}    
-                </div>
-            {% empty %}
-                No listings using this tag
+                    </div>
+                {% endif %}
             {% endfor %}    
         </div>
     {% else %}
-        <h2 class="h1 mb-3">"{{ tag }}" is not a valid tag</h2> 
-        <p class="mb-5 mx-4">Back to <a href="{% url 'index' %}" class="text-decoration-none">Active Listings</a></p>
+        <div class="ms-4">No Closed Listings</div>
     {% endif %}
-
+    
 {% endblock %}
