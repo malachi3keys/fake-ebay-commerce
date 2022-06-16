@@ -12,9 +12,14 @@
         
         <form action="{% url 'list_item' item.id %}" method="POST">
             {% csrf_token %}
-            <button class="btn" type="submit" id="watched" name="watched">❤️ Add to Watch list</button>
-            <!-- <a role="button" name="watched" class="text-decoration-none">❤️ Add to Watch list</a>       -->
-        </form>
+            <input type="checkbox" name="watched" id="watched"checked hidden>
+
+            {% if not fave %}
+                <button class="btn btn-light" type="submit">❤️ Add to Watch List</button>
+            {% else %}
+                <button class="btn btn-light" type="submit">❤️ Remove from Watch List</button>
+            {% endif %}
+        </form>      
     </div>
     
     {% if item.img %}

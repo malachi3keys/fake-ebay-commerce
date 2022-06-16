@@ -111,114 +111,109 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-def list_item(request, list_id):
-    listNum = Listing.objects.count()
-    
+def list_item(request, list_id):    
     # check there is a listing with requested id
-    try:
+    if Listing.objects.filter(pk=list_id):
         item = Listing.objects.get(pk=list_id)
-        dne = False
-    except Listing.DoesNotExist:
-        dne = True
-
-    if list_id > listNum or dne:
-        return redirect("index")  
-    else:
         comments = Comment.objects.filter(listing=list_id)
         bids = Bid.objects.filter(listing=list_id)
-
+        
         if bids:
             top_bid = bids.last().dollar
-        else: 
-            top_bid = float(item.bid_start)             
+        else:
+            top_bid = float(item.bid_start)
         
-    if request.method =='GET':
-        # check if user is signed in
-        user_check = request.user
+        if request.method =='GET':
+            # check if user is signed in
+            user_check = request.user
 
-        if user_check.is_authenticated:
- 
-            # check user is the same as the listing
-            # if same can't bid, but can edit
-            # create new comment and bid forms
-            if user_check == item.user:
-                canedit = True
-                cform = CommentForm()
-                bform = None
-    
-            else: 
-                canedit = False
-                cform = CommentForm()
-                bform = BidForm()          
-
-        else:   
-            cform = None
-            bform = None
-            canedit = False
-            user_check = None
-        
-        return render(request, "auctions/listing.html", {
-            "item": item,
-            "bids": bids,
-            "top": top_bid,
-            "comments": comments,
-            "editor": canedit,
-            "cform": cform,
-            "bform": bform,
-            "user": user_check
-        })
-   
-    # only show comment/bid input if logged in?
-    elif request.method =='POST': 
-        body = request.POST.get("body")
-        dollar = request.POST.get("dollar")
-        watched = request.POST.get("watched")
-
-        if body:
-            cform = CommentForm(request.POST)
-            
-            if cform.is_valid():
-                newComment = cform.save(commit=False)
-                newComment.user = request.user
-                newComment.listing = item
-                newComment.save() 
-
-        elif dollar:
-            bform = BidForm(request.POST) 
-
-            if bform.is_valid():
-                if float(dollar) > top_bid: 
-                    newBid = bform.save(commit=False)
-                    newBid.bidder = request.user
-                    newBid.listing = item
-                    newBid.save()
+            if user_check.is_authenticated:
+                # check if user has favorited the listing
+                if Watchlist.objects.filter(user=user_check).filter(listing=list_id):
+                    fave = True
                 else:
-                    bform.add_error("dollar", "Bid must be greater than highest bid")
+                    fave = False
 
-        elif watched:
-            print("hey")
-            user = request.user
-            if user.is_authenticated:
-                try: 
-                    watchCheck = Watchlist.objects.get(user=user) 
-                except Watchlist.DoesNotExist:
-                    watchCheck = None
+                # if user is the same as the listing they can edit but can't bid
+                if user_check == item.user:
+                    canedit = True
+                    cform = CommentForm()
+                    bform = None
+                # othewise, create new comment and bid forms
+                else: 
+                    canedit = False
+                    cform = CommentForm()
+                    bform = BidForm()          
 
-                #Create a watch list if user doesn't have one
-                if watchCheck is None: 
-                    newWatch = Watchlist.objects.create(user=user)
-                    newWatch.save()
+            else:   
+                cform = None
+                bform = None
+                canedit = False
+                user_check = None
+                fave = False
+            
+            return render(request, "auctions/listing.html", {
+                "item": item,
+                "bids": bids,
+                "top": top_bid,
+                "comments": comments,
+                "editor": canedit,
+                "cform": cform,
+                "bform": bform,
+                "user": user_check,
+                "fave": fave,
+            })
+   
+        # only show comment/bid input if logged in?
+        elif request.method =='POST': 
+            body = request.POST.get("body")
+            dollar = request.POST.get("dollar")
+            watched = request.POST.get("watched")
 
-                faves = Watchlist.objects.get(user=user)
-
-                # add listing to watch list if not already there
-                if not Watchlist.objects.filter(user=user).filter(listing=list_id):
-                    faves.listing.add(list_id)
+            if body:
+                cform = CommentForm(request.POST)
                 
-            else:
-                return redirect('login')
+                if cform.is_valid():
+                    newComment = cform.save(commit=False)
+                    newComment.user = request.user
+                    newComment.listing = item
+                    newComment.save() 
 
-        return redirect('list_item', list_id)
+            elif dollar:
+                bform = BidForm(request.POST) 
+
+                if bform.is_valid():
+                    if float(dollar) > top_bid: 
+                        newBid = bform.save(commit=False)
+                        newBid.bidder = request.user
+                        newBid.listing = item
+                        newBid.save()
+                    else:
+                        bform.add_error("dollar", "Bid must be greater than highest bid")
+
+            elif watched:
+                user = request.user
+                if user.is_authenticated:
+                    # create watch list if user doesn't have one
+                    if not Watchlist.objects.filter(user=user):
+                        newWatch = Watchlist.objects.create(user=user)
+                        newWatch.save()
+
+                    faves = Watchlist.objects.get(user=user)
+
+                    # add/remove listing from watch list
+                    if faves.listing.filter(pk=list_id):
+                        faves.listing.remove(Listing.objects.get(pk=list_id))
+                    else:
+                        faves.listing.add(Listing.objects.get(pk=list_id))
+
+                else:
+                    return redirect('login')
+
+            return redirect('list_item', list_id)
+
+    else:
+        return redirect("index")
 
         
 @login_required(login_url="login")
@@ -226,9 +221,9 @@ def watchlist(request):
     watcher = request.user
     
     # In case there is a user that doesn't have a watch list
-    try: 
+    if Watchlist.objects.filter(user=watcher).exists():
         faves = Watchlist.objects.get(user=watcher) 
-    except Watchlist.DoesNotExist:
+    else:
         faves = None
 
     return render(request, "auctions/watchlist.html", {
