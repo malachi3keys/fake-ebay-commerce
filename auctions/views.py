@@ -117,6 +117,7 @@ def list_item(request, list_id):
         item = Listing.objects.get(pk=list_id)
         comments = Comment.objects.filter(listing=list_id)
         bids = Bid.objects.filter(listing=list_id)
+        user = request.user
         
         if bids:
             top_bid = bids.last().dollar
@@ -125,17 +126,15 @@ def list_item(request, list_id):
         
         if request.method =='GET':
             # check if user is signed in
-            user_check = request.user
-
-            if user_check.is_authenticated:
+            if user.is_authenticated:
                 # check if user has favorited the listing
-                if Watchlist.objects.filter(user=user_check).filter(listing=list_id):
+                if Watchlist.objects.filter(user=user).filter(listing=list_id):
                     fave = True
                 else:
                     fave = False
 
                 # if user is the same as the listing they can edit but can't bid
-                if user_check == item.user:
+                if user == item.user:
                     canedit = True
                     cform = CommentForm()
                     bform = None
@@ -149,7 +148,7 @@ def list_item(request, list_id):
                 cform = None
                 bform = None
                 canedit = False
-                user_check = None
+                user = None
                 fave = False
             
             return render(request, "auctions/listing.html", {
@@ -160,16 +159,17 @@ def list_item(request, list_id):
                 "editor": canedit,
                 "cform": cform,
                 "bform": bform,
-                "user": user_check,
+                "user": user,
                 "fave": fave,
             })
    
-        # only show comment/bid input if logged in?
         elif request.method =='POST': 
             body = request.POST.get("body")
             dollar = request.POST.get("dollar")
             watched = request.POST.get("watched")
+            close = request.POST.get("close")
 
+            # save comment
             if body:
                 cform = CommentForm(request.POST)
                 
@@ -179,6 +179,7 @@ def list_item(request, list_id):
                     newComment.listing = item
                     newComment.save() 
 
+            # save bid
             elif dollar:
                 bform = BidForm(request.POST) 
 
@@ -191,8 +192,8 @@ def list_item(request, list_id):
                     else:
                         bform.add_error("dollar", "Bid must be greater than highest bid")
 
+            #update user watchlist
             elif watched:
-                user = request.user
                 if user.is_authenticated:
                     # create watch list if user doesn't have one
                     if not Watchlist.objects.filter(user=user):
@@ -209,6 +210,13 @@ def list_item(request, list_id):
 
                 else:
                     return redirect('login')
+
+            # close listing and update winner
+            elif close:
+                if user.is_authenticated and user == item.user:
+                    item.active = False
+                #     # item.winner = bidtracker.topbid.user
+                #     item.winner = top_bid.user
 
             return redirect('list_item', list_id)
 

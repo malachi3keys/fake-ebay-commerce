@@ -20,6 +20,7 @@ class Listing(models.Model):
     img = models.ImageField(upload_to='images/', max_length=200, null=True, blank=True)
     list_tag = models.ManyToManyField(Tag, related_name="category",blank=True)
     active = models.BooleanField(default=True)
+    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="winbid", blank=True, null=True)
 
     def __str__(self):
         return f"{self.post_title}"
@@ -33,6 +34,9 @@ class Bid(models.Model):
     def __str__(self):
         return f"{self.dollar}"
 
+class BidTracker(models.Model):
+    listing = models.OneToOneField(Listing, on_delete=models.CASCADE, related_name="bid_item")
+    top_bid = models.ForeignKey(Bid, on_delete=models.CASCADE, related_name="topbid")
 
 class Comment(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comment")

@@ -65,8 +65,9 @@
         <div class="mb-5">
             <div>
                 <h3 class="mb-3 d-inline">Bids</h3>    
-                <a class="d-inline text-decoration-none" data-bs-toggle="collapse" href="#collapseBids" aria-expanded="false" aria-controls="collapseBids">
-                    (Show/Hide)
+                <a class="d-inline text-decoration-none toggle-text" data-bs-toggle="collapse" href="#collapseBids" aria-expanded="false" aria-controls="collapseBids">
+                    <span class="text-collapsed">(Show)</span>
+                    <span class="text-expanded">(Hide)</span>
                 </a>
             </div>
             
@@ -102,7 +103,24 @@
                         {% endif %} 
                     </div>    
                 </div>
-              </div>
+            </div>
+            
+            {% if editor %}
+                <div class="mb-3 mx-4">      
+                    <!-- <h4>To accept the final bid and close listing, press button below:</h4>      -->
+                    
+                    <form action="{% url 'list_item' item.id %}" method="POST">
+                        {% csrf_token %}
+                        <div>
+                            <label for="close" class="my-2">Press button below to accept the final bid & close the listing:</label>
+                            <input type="checkbox" name="close" id="close" checked hidden>    
+                        </div>
+                        
+                        <button type="submit" class="btn btn-dark btn-small">Close Listing</button>                    
+                    </form> 
+                    <!-- <a href="{% url 'list_item' item.id %}" class="btn btn-small mb-4 btn-dark">Close Listing</a> -->
+                </div>
+            {% endif %}
             
         </div>
 

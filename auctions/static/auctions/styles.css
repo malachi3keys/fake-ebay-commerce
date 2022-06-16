@@ -44,3 +44,10 @@ textarea, select {
 input[type=text] {
     min-width: 450px;
 }
+
+.toggle-text[aria-expanded=false] .text-expanded {
+    display: none;
+  }
+.toggle-text[aria-expanded=true] .text-collapsed {
+    display: none;
+  }
