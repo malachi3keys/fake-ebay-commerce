@@ -51,3 +51,9 @@ input[type=text] {
 .toggle-text[aria-expanded=true] .text-collapsed {
     display: none;
   }
+
+  .winner {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: bold;
+  }

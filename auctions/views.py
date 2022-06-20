@@ -121,8 +121,12 @@ def list_item(request, list_id):
         
         if bids:
             top_bid = bids.last().dollar
+            item.top_bid = top_bid
+            item.save()
         else:
-            top_bid = float(item.bid_start)
+            top_bid = item.bid_start
+            item.top_bid = top_bid
+            item.save()
         
         if request.method =='GET':
             # check if user is signed in
@@ -144,12 +148,19 @@ def list_item(request, list_id):
                     cform = CommentForm()
                     bform = BidForm()          
 
+                # tell user they won the listing 
+                if user == item.winner:
+                    winner = True
+                else:
+                    winner = False
+
             else:   
                 cform = None
                 bform = None
                 canedit = False
                 user = None
                 fave = False
+                winner = False
             
             return render(request, "auctions/listing.html", {
                 "item": item,
@@ -161,6 +172,7 @@ def list_item(request, list_id):
                 "bform": bform,
                 "user": user,
                 "fave": fave,
+                "winner": winner,
             })
    
         elif request.method =='POST': 
@@ -214,9 +226,12 @@ def list_item(request, list_id):
             # close listing and update winner
             elif close:
                 if user.is_authenticated and user == item.user:
-                    item.active = False
-                #     # item.winner = bidtracker.topbid.user
-                #     item.winner = top_bid.user
+                    # only allowed to close if there is a bid
+                    if bids:
+                        item.winner = bids.last().bidder    
+                        item.active = False
+                        item.save()                    
+                    
 
             return redirect('list_item', list_id)
 
@@ -311,13 +326,13 @@ def new(request):
         f = ListingForm(request.POST, request.FILES)
         
         if f.is_valid():
-            #check for duplicates and make post_title unique in models?
             newList = f.save(commit=False)
             newList.user = request.user
+            newList.top_bid = newList.bid_start
             newList.save()
-    
-            recent = Listing.objects.count()
-            return redirect('list_item', recent)
+
+
+            return redirect('list_item', newList.id)
 
 def closed(request):
     # check if there are any closed listings
@@ -325,5 +340,4 @@ def closed(request):
 
     return render(request, "auctions/closed.html", {
         "items": closed_items,
-        # "test": test
     })

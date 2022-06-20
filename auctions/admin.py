@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Bid, Comment, Listing, Tag, User,  Watchlist, BidTracker
+from .models import Bid, Comment, Listing, Tag, User,  Watchlist
 
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ("post_title", "user")
+    list_display = ("post_title", "user", "id")
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ("listing", "user", "body")
@@ -18,4 +18,3 @@ admin.site.register(Bid, BidAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Watchlist)
 admin.site.register(Tag)
-admin.site.register(BidTracker)

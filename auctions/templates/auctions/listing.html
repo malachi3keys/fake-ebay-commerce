@@ -3,6 +3,11 @@
 {% block title %}{{ item.title }}{% endblock %}
 
 {% block body %}
+    {% if winner %}
+        <div class="mb-3 winner">
+            YOU WON THE LISTING!
+        </div>
+    {% endif %}
     <div class="mb-3">
         <h2 class="h1">{{ item.post_title }}</h2>
         
@@ -34,7 +39,7 @@
         <div class="d-flex">
             <div class="me-5">
                 {% if item.active %}
-                    <p>Top Bid: ${{ top }}</p>
+                    <p>Current Bid: ${{ top }}</p>
                 {% else %}
                     <p>Final Bid: ${{ top }}</p>
                 {% endif %}
@@ -106,20 +111,19 @@
             </div>
             
             {% if editor %}
-                <div class="mb-3 mx-4">      
-                    <!-- <h4>To accept the final bid and close listing, press button below:</h4>      -->
-                    
-                    <form action="{% url 'list_item' item.id %}" method="POST">
-                        {% csrf_token %}
-                        <div>
-                            <label for="close" class="my-2">Press button below to accept the final bid & close the listing:</label>
-                            <input type="checkbox" name="close" id="close" checked hidden>    
-                        </div>
-                        
-                        <button type="submit" class="btn btn-dark btn-small">Close Listing</button>                    
-                    </form> 
-                    <!-- <a href="{% url 'list_item' item.id %}" class="btn btn-small mb-4 btn-dark">Close Listing</a> -->
-                </div>
+                {% if bids.all %}
+                    <div class="mb-3 mx-4">                          
+                        <form action="{% url 'list_item' item.id %}" method="POST">
+                            {% csrf_token %}
+                            <div>
+                                <label for="close" class="my-2">Press button below to accept the final bid & close the listing:</label>
+                                <input type="checkbox" name="close" id="close" checked hidden>    
+                            </div>
+                            
+                            <button type="submit" class="btn btn-dark btn-small">Close Listing</button>                    
+                        </form> 
+                    </div>
+                {% endif %}
             {% endif %}
             
         </div>

@@ -17,6 +17,7 @@ class Listing(models.Model):
     post_title = models.CharField(max_length=64, unique=True)
     description = models.TextField(max_length=500)
     bid_start = models.DecimalField(max_digits=10, decimal_places=2)
+    top_bid = models.DecimalField(max_digits=10, decimal_places=2)
     img = models.ImageField(upload_to='images/', max_length=200, null=True, blank=True)
     list_tag = models.ManyToManyField(Tag, related_name="category",blank=True)
     active = models.BooleanField(default=True)
@@ -34,9 +35,6 @@ class Bid(models.Model):
     def __str__(self):
         return f"{self.dollar}"
 
-class BidTracker(models.Model):
-    listing = models.OneToOneField(Listing, on_delete=models.CASCADE, related_name="bid_item")
-    top_bid = models.ForeignKey(Bid, on_delete=models.CASCADE, related_name="topbid")
 
 class Comment(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comment")
