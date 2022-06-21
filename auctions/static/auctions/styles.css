@@ -52,8 +52,8 @@ input[type=text] {
     display: none;
   }
 
-  .winner {
+.winner {
     text-align: center;
     font-size: 3rem;
     font-weight: bold;
-  }
+}

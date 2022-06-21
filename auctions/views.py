@@ -1,4 +1,3 @@
-from queue import Empty
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -47,8 +46,7 @@ class BidForm(forms.ModelForm):
 
 def index(request):
     auction_items = Listing.objects.all()
-    # how to organize bids? want to show current bid but hard to track/line up
-    # when not in same order and multiple bids
+    
     return render(request, "auctions/index.html", {
         "items": auction_items
     })
@@ -56,7 +54,6 @@ def index(request):
 
 def login_view(request):
     if request.method == "POST":
-
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
@@ -341,3 +338,25 @@ def closed(request):
     return render(request, "auctions/closed.html", {
         "items": closed_items,
     })
+
+
+@login_required(login_url="login")
+def account(request):
+    user = request.user
+    if request.method =='GET': 
+        return render(request, "auctions/account.html", {
+            "user": user
+        })
+
+def userlistings(request, username):
+    if request.method =='GET':
+        if User.objects.filter(username=username):
+            user_id = User.objects.get(username=username)
+            items = Listing.objects.filter(user=user_id)
+        else:
+            items = None
+
+        return render(request, "auctions/userlist.html", {
+            "person": username,
+            "items": items
+        })

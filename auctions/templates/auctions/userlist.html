@@ -1,36 +1,36 @@
 {% extends "auctions/layout.html" %}
 
-{% block title %}Watch List{% endblock %}
+{% block title %}{{ person }}'s Listings{% endblock %}
 
 {% block body %}
-    <h2 class="h1 mb-3">Watch List</h2>
+    <h2 class="h1 mb-3">Listings by {{ person }}</h2>
 
     <div class="mb-5 d-flex flex-wrap justify-content-center">
-        {% for fave in faves.listing.all %}
+        {% for item in items %}
             <div class="alisting mb-4">
-                {% if fave.img %}
+                {% if item.img %}
                     <div class="img-adj">
-                        <a href="{% url 'list_item' fave.id %}"><img class="my-3 img-mult" src="{{ fave.img.url }}" alt="{{ fave.post_title }}"></a>
+                        <a href="{% url 'list_item' item.id %}"><img class="my-3 img-mult" src="{{ item.img.url }}" alt="{{ item.post_title }}"></a>
                     </div>
                 {% endif %}
                 <div>
-                    <h2><a href="{% url 'list_item' fave.id %}" class="text-decoration-none text-black">{{ fave.post_title }}</a></h2>
+                    <h2><a href="{% url 'list_item' item.id %}" class="text-decoration-none text-black">{{ item.post_title }}</a></h2>
                     <div>
-                        <p>{{ fave.description }}</p>    
+                        <p>{{ item.description }}</p>    
                     </div>
                     <div class="d-flex">
                         <div class="flex-fill">
-                            <p><b>Current Bid:</b>  ${{ fave.top_bid }}</p>
+                            <p><b>Current Bid:</b>  ${{ item.top_bid }}</p>
                         </div>
                         <div>
-                            <p><b>Seller:</b> <a href="{% url 'userlistings' fave.user %}" class="text-decoration-none text-black">{{ fave.user }}</a></p>    
+                            <p><b>Seller:</b> <a href="{% url 'userlistings' item.user %}" class="text-decoration-none text-black">{{ item.user }}</a></p>    
                         </div>    
                     </div>
                     <div class="d-flex">
                         <div class="pe-2 my-2">
                             <p><b>Tags:</b></p>
                         </div>
-                        {% for tag in fave.list_tag.all %}
+                        {% for tag in item.list_tag.all %}
                             <div class="tags me-2">
                                 <a href="{% url 'tags' tag %}" class="btn btn-small mb-4 tagbutton">{{ tag }}</a>
                             </div>
@@ -39,7 +39,10 @@
                 </div>
             </div>
         {% empty %}
-            No watched listings
+            <div class="d-flex flex-column align-items-center">
+                <div>No listings created by this user</div>
+                <div>Return to <a href="{% url 'index' %}">Active Listings</a></div>
+            </div>
         {% endfor %}    
     </div>
 
